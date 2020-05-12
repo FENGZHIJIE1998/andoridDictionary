@@ -11,7 +11,7 @@ public class Sha256Util {
      * @param str 加密后的报文
      * @return
      */
-    public static String getSHA256(String str) {
+    public static String encrypt(String str) {
         MessageDigest messageDigest;
         String encodestr = "";
         try {

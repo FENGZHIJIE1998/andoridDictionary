@@ -11,7 +11,8 @@
         android:id="@+id/web_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="7dp"
+        android:paddingTop="10dp"
+        android:paddingLeft="7dp"
         android:text="@string/app_name"
         android:textColor="#fff"
         android:textSize="18sp" />
@@ -19,7 +20,7 @@
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_layout"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:tabIndicatorColor="#fff"
         app:tabIndicatorHeight="0dp"
@@ -35,6 +36,12 @@
 
     </com.google.android.material.tabs.TabLayout>
 
-
+    <ImageView
+        android:id="@+id/camera"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:src="@mipmap/camera"
+        android:layout_gravity="center"
+        />
 
 </LinearLayout>

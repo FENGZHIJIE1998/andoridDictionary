@@ -143,7 +143,6 @@ public class SearchFragment extends Fragment {
                     autoAssociationsListView.setVisibility(View.INVISIBLE);
                 }
             }
-
             @Override
             public void afterTextChanged(Editable s) {
             }
@@ -167,80 +166,80 @@ public class SearchFragment extends Fragment {
 
 
     /**
-     * 异步任务
-     */
-    class SearchTask extends AsyncTask<Void, Integer, Boolean> {
-
-        private TranslationResponse resp;
-
-        /**
-         * 发送请求
-         *
-         * @param params
-         * @return
+         * 异步任务
          */
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            resp = sendRequestWithOkHttp();
-            return true;
-        }
+        class SearchTask extends AsyncTask<Void, Integer, Boolean> {
 
-        /**
-         * 更新UI
-         *
-         * @param result
-         */
-        @Override
-        protected void onPostExecute(Boolean result) {
-            if (resp != null && !resp.getErrorCode().equals("0")) {
-                content.setVisibility(View.INVISIBLE);
-                Toast.makeText(view.getContext(), "输入错误", Toast.LENGTH_LONG).show();
-                return;
+            private TranslationResponse resp;
+
+            /**
+             * 发送请求
+             *
+             * @param params
+             * @return
+             */
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                resp = sendRequestWithOkHttp();
+                return true;
             }
 
-            StringBuilder tran = new StringBuilder();
-            for (String str : resp.getTranslation()) {
-                tran.append(str).append("\n");
-            }
-            tran.setLength(tran.length() - 1);
-            translation.setText(tran.toString());
-            if (resp.getBasic() != null) {
-                if (resp.getBasic().getPhonetic() != null) {
-                    ukPhonetic.setText(resp.getBasic().getPhonetic());
-                    ukIb.setVisibility(View.VISIBLE);
-                    ukIb.setOnClickListener(v -> speak(resp.getTSpeakUrl()));
+            /**
+             * 更新UI
+             *
+             * @param result
+             */
+            @Override
+            protected void onPostExecute(Boolean result) {
+                if (resp != null && !resp.getErrorCode().equals("0")) {
+                    content.setVisibility(View.INVISIBLE);
+                    Toast.makeText(view.getContext(), "输入错误", Toast.LENGTH_LONG).show();
+                    return;
                 }
-                if (resp.getBasic().getUkPhonetic() != null) {
-                    ukPhonetic.setText(resp.getBasic().getUkPhonetic());
-                    ukIb.setVisibility(View.VISIBLE);
-                    ukIb.setOnClickListener(v -> speak(resp.getBasic().getUkSpeech()));
+
+                StringBuilder tran = new StringBuilder();
+                for (String str : resp.getTranslation()) {
+                    tran.append(str).append("\n");
                 }
-                if (resp.getBasic().getUsPhonetic() != null) {
-                    usPhonetic.setText(resp.getBasic().getUsPhonetic());
-                    usIb.setVisibility(View.VISIBLE);
-                    usIb.setOnClickListener(v -> speak(resp.getBasic().getUsSpeech()));
+                tran.setLength(tran.length() - 1);
+                translation.setText(tran.toString());
+                if (resp.getBasic() != null) {
+                    if (resp.getBasic().getPhonetic() != null) {
+                        ukPhonetic.setText(resp.getBasic().getPhonetic());
+                        ukIb.setVisibility(View.VISIBLE);
+                        ukIb.setOnClickListener(v -> speak(resp.getTSpeakUrl()));
+                    }
+                    if (resp.getBasic().getUkPhonetic() != null) {
+                        ukPhonetic.setText(resp.getBasic().getUkPhonetic());
+                        ukIb.setVisibility(View.VISIBLE);
+                        ukIb.setOnClickListener(v -> speak(resp.getBasic().getUkSpeech()));
+                    }
+                    if (resp.getBasic().getUsPhonetic() != null) {
+                        usPhonetic.setText(resp.getBasic().getUsPhonetic());
+                        usIb.setVisibility(View.VISIBLE);
+                        usIb.setOnClickListener(v -> speak(resp.getBasic().getUsSpeech()));
+                    }
+                    StringBuilder explain = new StringBuilder();
+                    for (String str : resp.getBasic().getExplains()) {
+                        explain.append(str).append("\n");
+                    }
+                    explain.setLength(explain.length() - 1);
+                    explains.setText(explain.toString());
                 }
-                StringBuilder explain = new StringBuilder();
-                for (String str : resp.getBasic().getExplains()) {
-                    explain.append(str).append("\n");
-                }
-                explain.setLength(explain.length() - 1);
-                explains.setText(explain.toString());
-            }
-            if (resp.getWeb() != null) {
-                StringBuilder webs = new StringBuilder();
-                for (Web web : resp.getWeb()) {
-                    for (String value : web.getValue()) {
-                        webs.append(value).append(",");
+                if (resp.getWeb() != null) {
+                    StringBuilder webs = new StringBuilder();
+                    for (Web web : resp.getWeb()) {
+                        for (String value : web.getValue()) {
+                            webs.append(value).append(",");
+                        }
+                        webs.setLength(webs.length() - 1);
+                        webs.append("\n");
                     }
                     webs.setLength(webs.length() - 1);
-                    webs.append("\n");
+                    web.setText(webs.toString());
                 }
-                webs.setLength(webs.length() - 1);
-                web.setText(webs.toString());
+                content.setVisibility(View.VISIBLE);
             }
-            content.setVisibility(View.VISIBLE);
-        }
 
 
         private final static String APP_ID = "0cc942aae8ef010c";
@@ -262,7 +261,7 @@ public class SearchFragment extends Fragment {
                         .add("to", "auto")
                         .add("appKey", "0cc942aae8ef010c")
                         .add("salt", salt)
-                        .add("sign", Sha256Util.getSHA256(sign))
+                        .add("sign", Sha256Util.encrypt(sign))
                         .add("signType", "v3")
                         .add("curtime", curtime)
                         .build();

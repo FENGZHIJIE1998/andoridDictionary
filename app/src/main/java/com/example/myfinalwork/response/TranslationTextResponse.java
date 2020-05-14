@@ -12,7 +12,7 @@ import java.util.Map;
 import lombok.Data;
 
 @Data
-public class TranslationResponse implements Serializable {
+public class TranslationTextResponse implements Serializable {
     private String errorCode;
 
     private String query;
@@ -36,7 +36,7 @@ public class TranslationResponse implements Serializable {
 
     @Override
     public String toString() {
-        return "TranslationResponse{" +
+        return "TranslationTextResponse{" +
                 "errorCode='" + errorCode + '\'' +
                 ", query='" + query + '\'' +
                 ", translation=" + translation +

@@ -1,10 +1,11 @@
 package com.example.myfinalwork.utils;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class Sha256Util {
+public class SHA256Util {
     /**
      * 利用java原生的类实现SHA256加密
      *
@@ -45,5 +46,6 @@ public class Sha256Util {
         }
         return stringBuffer.toString();
     }
+
 
 }

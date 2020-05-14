@@ -62,7 +62,6 @@ public class HistoryFragment extends Fragment {
             res.add("暂无历史记录");
         }
 
-
         // 设置适配器
         ListAdapter listAdapter = new HistoryListAdapter(view.getContext(), R.layout.history, res);
         historyListView.setAdapter(listAdapter);
@@ -74,6 +73,7 @@ public class HistoryFragment extends Fragment {
             viewPage.setCurrentItem(0);
         });
         cursor.close();
+        db.close();
     }
 
 

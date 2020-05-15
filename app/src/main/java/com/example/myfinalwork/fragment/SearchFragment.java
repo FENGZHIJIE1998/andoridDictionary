@@ -15,12 +15,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +44,8 @@ import com.google.gson.Gson;
 import com.youth.banner.Banner;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +71,8 @@ public class SearchFragment extends Fragment {
     private ImageButton usIb;
     private HistorySearchDao historySearchDao;
     private View view;
+    private String from = "auto";
+    private String to = "auto";
 
     @Nullable
     @Override
@@ -81,6 +90,93 @@ public class SearchFragment extends Fragment {
         usIb = view.findViewById(R.id.us_ib);
         button = view.findViewById(R.id.search_btn);
         historySearchDao = new HistorySearchDao(view.getContext(), "history_word", null, 2);
+        Spinner fromSpinner = view.findViewById(R.id.from);
+        String[] ctype = new String[]{"自动", "中文", "英文", "日文", "韩文", "法文"};
+        ArrayAdapter<String> fromAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, ctype);
+        fromSpinner.setAdapter(fromAdapter);
+
+        fromSpinner.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        String str = fromAdapter.getItem(position);
+                        if (str == null) {
+                            Toast.makeText(view.getContext(), "出错啦", Toast.LENGTH_LONG).show();
+                        }
+                        switch (str) {
+                            case "自动":
+                                from = "auto";
+                                break;
+                            case "中文":
+                                from = "zh-CHS";
+                                break;
+                            case "英文":
+                                from = "en";
+                                break;
+                            case "日文":
+                                from = "ja";
+                                break;
+                            case "韩文":
+                                from = "ko";
+                                break;
+                            case "法文":
+                                from = "fr";
+                                break;
+                            default:
+                                throw new IllegalStateException("Unexpected value: " + str);
+                        }
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                        from = "auto";
+                    }
+                }
+        );
+
+        Spinner toSpinner = view.findViewById(R.id.to);
+        ArrayAdapter<String> toAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, ctype);
+        toSpinner.setAdapter(toAdapter);
+        toSpinner.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        String str = toAdapter.getItem(position);
+                        if (str == null || "".equals(str)) {
+                            Toast.makeText(view.getContext(), "出错啦", Toast.LENGTH_LONG).show();
+                        }
+                        switch (str) {
+                            case "自动":
+                                to = "auto";
+                                break;
+                            case "中文":
+                                to = "zh-CHS";
+                                break;
+                            case "英文":
+                                to = "en";
+                                break;
+                            case "日文":
+                                to = "ja";
+                                break;
+                            case "韩文":
+                                to = "ko";
+                                break;
+                            case "法文":
+                                to = "fr";
+                                break;
+                            default:
+                                throw new IllegalStateException("Unexpected value: " + str);
+                        }
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                        to = "auto";
+                    }
+                }
+        );
+
 
         //绑定点击事件
         button.setOnClickListener(v -> {
@@ -179,6 +275,7 @@ public class SearchFragment extends Fragment {
          */
         @Override
         protected Boolean doInBackground(Void... params) {
+
             sendRequestWithOkHttp();
             return true;
         }
@@ -190,6 +287,13 @@ public class SearchFragment extends Fragment {
          */
         @Override
         protected void onPostExecute(Boolean result) {
+            String empty = "";
+            ukPhonetic.setText(empty);
+            usPhonetic.setText(empty);
+            translation.setText(empty);
+            web.setText(empty);
+            explains.setText(empty);
+
             // 判断错误
             if (resp != null && !resp.getErrorCode().equals("0")) {
                 content.setVisibility(View.INVISIBLE);
@@ -258,8 +362,8 @@ public class SearchFragment extends Fragment {
                 String sign = APP_ID + truncate(text.toString()) + salt + curtime + APP_KEY;
                 Map<String, String> map = new HashMap<>();
                 map.put("q", text.toString());
-                map.put("from", "auto");
-                map.put("to", "auto");
+                map.put("from", from);
+                map.put("to", to);
                 map.put("appKey", APP_ID);
                 map.put("salt", salt);
                 map.put("sign", SHA256Util.encrypt(sign));

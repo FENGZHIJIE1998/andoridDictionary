@@ -1,22 +1,15 @@
-package com.example.myfinalwork;
+package com.example.myfinalwork.activity;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityOptionsCompat;
 
 import android.graphics.Bitmap;
-import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.myfinalwork.R;
 import com.example.myfinalwork.utils.Base64Util;
-
-import lombok.val;
 
 public class PhotoViewActivity extends BaseActivity {
 

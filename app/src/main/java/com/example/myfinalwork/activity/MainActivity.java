@@ -1,4 +1,4 @@
-package com.example.myfinalwork;
+package com.example.myfinalwork.activity;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
@@ -24,6 +24,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.myfinalwork.R;
 import com.example.myfinalwork.fragment.FragmentViewPager;
 import com.example.myfinalwork.response.TranslationImageResponse;
 import com.example.myfinalwork.response.TranslationTextResponse;
@@ -172,14 +173,9 @@ public class MainActivity extends BaseActivity {
         private TranslationImageResponse resp;
         private final static String APP_ID = "0cc942aae8ef010c";
         private final static String APP_KEY = "sBaPGIUEoBJwXQbKero8qvpWeHtHIGqB";
-        private final static String url = "https://openapi.youdao.com/ocrtransapi";
-        private static final String TAG = "ImageTask";
 
         /**
          * 发送请求
-         *
-         * @param params
-         * @return
          */
         @Override
         protected Boolean doInBackground(Void... params) {
@@ -189,32 +185,33 @@ public class MainActivity extends BaseActivity {
                 assert inputStream != null;
                 String base64 = Base64Util.loadAsBase64(inputStream);
 
-                resp = new Gson().fromJson(getFromRaw(), TranslationImageResponse.class);
+                //resp = new Gson().fromJson(getFromRaw(), TranslationImageResponse.class);
 
-                //sendRequestWithOkHttp(base64);
+                sendRequestWithOkHttp(base64);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
             return true;
         }
 
-        //从resources中的raw 文件夹中获取文件并读取数据
-        public String getFromRaw() {
-            String result = "";
-            try {
-                InputStream in = getResources().openRawResource(R.raw.output);
-                //获取文件的字节数
-                //创建byte数组
-                byte[] buffer = new byte[in.available()];
-                //将文件中的数据读到byte数组中
-                in.read(buffer);
-                result = new String(buffer, "UTF-8");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return result;
-        }
+        /**
+         *         从resources中的raw 文件夹中获取文件并读取数据
+         */
+//        public String getFromRaw() {
+//            String result = "";
+//            try {
+//                InputStream in = getResources().openRawResource(R.raw.output);
+//                //获取文件的字节数
+//                //创建byte数组
+//                byte[] buffer = new byte[in.available()];
+//                //将文件中的数据读到byte数组中
+//                in.read(buffer);
+//                result = new String(buffer, "UTF-8");
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//            return result;
+//        }
 
         /**
          * 更新UI
@@ -255,26 +252,8 @@ public class MainActivity extends BaseActivity {
                 System.out.println(map.size());
                 Call<TranslationImageResponse> call = request.translationImage(map);
                 Response<TranslationImageResponse> response = call.execute();
-
                 resp = response.body();
-//                File file = new File(getExternalCacheDir(), "output.txt");
-//                if (!file.exists()) {
-//                    file.createNewFile();
-//                }
-//                FileWriter oos = null;
-//                try {
-//
-//                    oos = new FileWriter(file);
-//                    oos.write(new Gson().toJson(resp));
-//                    oos.flush();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                } finally {
-//
-//                    oos.close();
-//                }
-                // TranslationTextResponse resp = parseJSON(responseData);
-                //  return resp;
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -282,14 +261,7 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    /**
-     * 解析JSON
-     */
-    private TranslationTextResponse parseJSON(String json) {
-        Gson gson = new Gson();
-        TranslationTextResponse resp = gson.fromJson(json, TranslationTextResponse.class);
-        return resp;
-    }
+
 
 }
 

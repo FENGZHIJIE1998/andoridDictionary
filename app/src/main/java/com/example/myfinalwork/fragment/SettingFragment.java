@@ -21,6 +21,9 @@ import com.example.myfinalwork.R;
 import com.example.myfinalwork.dao.HistorySearchDao;
 
 
+/**
+ * SettingFragment
+ */
 public class SettingFragment extends Fragment {
 
     private View view;
@@ -39,6 +42,7 @@ public class SettingFragment extends Fragment {
                 .apply(options)
                 .into(imageView);
         Button clearHistoryBtn = view.findViewById(R.id.clear_history_btn);
+        // 清除缓存
         clearHistoryBtn.setOnClickListener(v -> {
             SQLiteDatabase db = historySearchDao.getReadableDatabase();
             db.execSQL("delete  from history_word");

@@ -17,6 +17,9 @@ import com.example.myfinalwork.entity.HistorySearch;
 
 import java.util.List;
 
+/**
+ * 自动联想适配器
+ */
 public class AutoAssociationsAdapter extends ArrayAdapter<String> {
     private int resourceId;
 

@@ -52,7 +52,9 @@ import java.util.concurrent.TimeUnit;
 import retrofit2.Call;
 import retrofit2.Response;
 
-
+/**
+ * 主活动
+ */
 public class MainActivity extends BaseActivity {
 
     private static final int TAKE_PHOTO = 1;
@@ -77,8 +79,9 @@ public class MainActivity extends BaseActivity {
         }
         setTheme(R.style.AppTheme);
         setContentView(R.layout.activity_main);
-        // 设置导航栏颜色
+        // 设置通知栏颜色
         setStatusBar(R.color.colorMain);
+        // 隐藏导航栏
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.hide();
@@ -98,6 +101,9 @@ public class MainActivity extends BaseActivity {
         // 设置相机模式
         ImageView camera = findViewById(R.id.camera);
         camera.setOnClickListener(v -> {
+            /**
+             * 设置对话窗
+             */
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("!");
             builder.setMessage("请选择图片获取方式");
@@ -129,12 +135,18 @@ public class MainActivity extends BaseActivity {
         });
     }
 
+    /**
+     * 打开相册
+     */
     private void openAlbum() {
         Intent intent = new Intent("android.intent.action.GET_CONTENT");
         intent.setType("image/*");
         startActivityForResult(intent, CHOOSE_PHOTO); // 打开相册
     }
 
+    /**
+     * 权限请求返回结果
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
@@ -214,26 +226,22 @@ public class MainActivity extends BaseActivity {
 //        }
 
         /**
-         * 更新UI
-         *
-         * @param result
+         * 跳转新页面
          */
         @Override
         protected void onPostExecute(Boolean result) {
             System.out.println(resp);
-
-
             Intent intent = new Intent(MainActivity.this, TranslationImageActivity.class);
             //用Bundle携带数据
             Bundle bundle = new Bundle();
-
             bundle.putSerializable("data", resp);
             intent.putExtras(bundle);
             startActivity(intent);
-
         }
 
-
+        /**
+         * 发送请求到有道智云
+         */
         private void sendRequestWithOkHttp(String base64) {
             try {
                 PostRequestInterface request = RetrofitFactory.create(PostRequestInterface.class);
@@ -248,19 +256,14 @@ public class MainActivity extends BaseActivity {
                 map.put("sign", MD5Util.encrypt(sign));
                 map.put("q", base64);
                 map.put("render", "1");
-                System.out.println(map);
-                System.out.println(map.size());
                 Call<TranslationImageResponse> call = request.translationImage(map);
                 Response<TranslationImageResponse> response = call.execute();
                 resp = response.body();
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
         }
     }
-
 
 
 }

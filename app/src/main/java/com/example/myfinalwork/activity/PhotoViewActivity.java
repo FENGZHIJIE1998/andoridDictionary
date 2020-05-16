@@ -11,6 +11,9 @@ import com.bumptech.glide.Glide;
 import com.example.myfinalwork.R;
 import com.example.myfinalwork.utils.Base64Util;
 
+/**
+ * 图片张氏模块
+ */
 public class PhotoViewActivity extends BaseActivity {
 
 
@@ -29,7 +32,7 @@ public class PhotoViewActivity extends BaseActivity {
         Bitmap bitmap = Base64Util.stringToBitmap(data);
         ImageView iv = findViewById(R.id.iv_photo);
         Glide.with(this).load(bitmap).into((iv));
-
+        // 单击关闭
         iv.setOnClickListener(v -> finish());
     }
 }

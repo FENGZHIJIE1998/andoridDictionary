@@ -7,8 +7,9 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 
-
-
+/**
+ * PageView 适配器
+ */
 public class FragmentViewPager extends FragmentPagerAdapter {
 
     private String[] mTitles;
@@ -31,7 +32,6 @@ public class FragmentViewPager extends FragmentPagerAdapter {
         }
         return new SearchFragment();
     }
-
 
 
     @Override

@@ -24,11 +24,14 @@ import com.example.myfinalwork.dao.HistorySearchDao;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 历史记录Fragment
+ */
 public class HistoryFragment extends Fragment {
     private HistorySearchDao historySearchDao;
     private ListView historyListView;
     private View view;
-    private View mainView;
+
 
     private TextView searchText;
     private Button searchBtn;
@@ -48,6 +51,9 @@ public class HistoryFragment extends Fragment {
         return view;
     }
 
+    /**
+     * 前往数据库查询历史记录
+     */
     private void listHistory() {
         SQLiteDatabase db = historySearchDao.getReadableDatabase();
         res = new ArrayList<>();
@@ -65,7 +71,7 @@ public class HistoryFragment extends Fragment {
         // 设置适配器
         ListAdapter listAdapter = new HistoryListAdapter(view.getContext(), R.layout.history, res);
         historyListView.setAdapter(listAdapter);
-
+        // 设置点击自动翻译
         historyListView.setOnItemClickListener((parent, view, position, id) -> {
             String word = res.get(position);
             searchText.setText(word);
@@ -76,7 +82,9 @@ public class HistoryFragment extends Fragment {
         db.close();
     }
 
-
+    /**
+     * 重载
+     */
     @Override
     public void onResume() {
         super.onResume();

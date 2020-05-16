@@ -54,6 +54,9 @@ import java.util.UUID;
 import retrofit2.Call;
 import retrofit2.Response;
 
+/**
+ * 在线翻译Fragment
+ */
 
 public class SearchFragment extends Fragment {
 
@@ -73,6 +76,8 @@ public class SearchFragment extends Fragment {
     private View view;
     private String from = "auto";
     private String to = "auto";
+    private Spinner fromSpinner;
+    private Spinner toSpinner;
 
     @Nullable
     @Override
@@ -89,15 +94,18 @@ public class SearchFragment extends Fragment {
         ukIb = view.findViewById(R.id.uk_ib);
         usIb = view.findViewById(R.id.us_ib);
         button = view.findViewById(R.id.search_btn);
+        fromSpinner = view.findViewById(R.id.from);
+        toSpinner = view.findViewById(R.id.to);
         historySearchDao = new HistorySearchDao(view.getContext(), "history_word", null, 2);
-        Spinner fromSpinner = view.findViewById(R.id.from);
+
+
+        // 设置 下拉框
         String[] ctype = new String[]{"自动", "中文", "英文", "日文", "韩文", "法文"};
-        ArrayAdapter<String> fromAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, ctype);
+        ArrayAdapter<String> fromAdapter = new ArrayAdapter<>(view.getContext(), android.R.layout.simple_spinner_item, ctype);
         fromSpinner.setAdapter(fromAdapter);
 
         fromSpinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
-
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                         String str = fromAdapter.getItem(position);
@@ -135,7 +143,6 @@ public class SearchFragment extends Fragment {
                 }
         );
 
-        Spinner toSpinner = view.findViewById(R.id.to);
         ArrayAdapter<String> toAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, ctype);
         toSpinner.setAdapter(toAdapter);
         toSpinner.setOnItemSelectedListener(
@@ -185,10 +192,10 @@ public class SearchFragment extends Fragment {
                 Toast.makeText(view.getContext(), "请输入要查询的词", Toast.LENGTH_LONG).show();
                 return;
             }
-
             SQLiteDatabase db = historySearchDao.getWritableDatabase();
+            // 将搜索词插入历史记录库
             try {
-                db.execSQL("insert into history_word(id,word) values(null,?) ", new String[]{text.toString()});
+                db.execSQL("insert into history_word(id, word) values(null, ?) ", new String[]{text.toString()});
             } catch (SQLiteConstraintException exception) {
                 Log.d("warming", "重复插入");
             }
@@ -204,6 +211,9 @@ public class SearchFragment extends Fragment {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
 
+            /**
+             *  文本变化后联想
+             */
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 final List<String> res = new ArrayList<>();
@@ -269,21 +279,15 @@ public class SearchFragment extends Fragment {
 
         /**
          * 发送请求
-         *
-         * @param params
-         * @return
          */
         @Override
         protected Boolean doInBackground(Void... params) {
-
             sendRequestWithOkHttp();
             return true;
         }
 
         /**
          * 更新UI
-         *
-         * @param result
          */
         @Override
         protected void onPostExecute(Boolean result) {
@@ -351,13 +355,14 @@ public class SearchFragment extends Fragment {
         private final static String APP_ID = "0cc942aae8ef010c";
         private final static String APP_KEY = "sBaPGIUEoBJwXQbKero8qvpWeHtHIGqB";
 
+        /**
+         * 发送请求
+         */
         private void sendRequestWithOkHttp() {
             try {
                 PostRequestInterface request = RetrofitFactory.create(PostRequestInterface.class);
                 Editable text = searchText.getText();
-
                 String salt = UUID.randomUUID().toString();
-
                 String curtime = TimeUtil.getUTCTimeStr();
                 String sign = APP_ID + truncate(text.toString()) + salt + curtime + APP_KEY;
                 Map<String, String> map = new HashMap<>();
@@ -369,17 +374,14 @@ public class SearchFragment extends Fragment {
                 map.put("sign", SHA256Util.encrypt(sign));
                 map.put("signType", "v3");
                 map.put("curtime", curtime);
-                //  RequestBody requestBody = RequestBody.create(MediaType.parse("Content-Type, application/json"), new JSONObject(map).toString());
                 System.out.println(map);
 
                 //对 发送请求 进行封装
                 Call<TranslationTextResponse> call = request.translationText(map);
                 Response<TranslationTextResponse> response = call.execute();
-                //System.out.println(response.body());
+
                 resp = response.body();
                 //String responseData = "{'tSpeakUrl':'http://openapi.youdao.com/ttsapi?q=%E7%88%B1&langType=zh-CHS&sign=9AD075ECDC579C44437BF625575FA840&salt=1588761973726&voice=4&format=mp3&appKey=0cc942aae8ef010c','returnPhrase':['love'],'RequestId':'887b40bb-193f-466f-af60-fa1f75cb8629','web':[{'value':['爱','爱情','爱心','恋爱'],'key':'love'},{'value':['浦岛景太郎','淳情房主俏佃农'],'key':'Love Hina'},{'value':['柏拉图式恋爱','柏拉图式爱情','精神恋爱','柏拉图式的爱情'],'key':'platonic love'}],'query':'love','translation':['爱'],'errorCode':'0','dict':{'url':'yddict://m.youdao.com/dict?le=eng&q=love'},'webdict':{'url':'http://m.youdao.com/dict?le=eng&q=love'},'basic':{'exam_type':['高中','初中'],'us-phonetic':'lʌv','phonetic':'lʌv','uk-phonetic':'lʌv','wfs':[{'wf':{'name':'过去式','value':'loved'}},{'wf':{'name':'过去分词','value':'loved'}},{'wf':{'name':'现在分词','value':'loving'}},{'wf':{'name':'复数','value':'loves'}},{'wf':{'name':'第三人称单数','value':'loves'}}],'uk-speech':'http://openapi.youdao.com/ttsapi?q=love&langType=en&sign=A210584A844999644572BD8E4D228A6D&salt=1588761973726&voice=5&format=mp3&appKey=0cc942aae8ef010c','explains':['n. 爱；爱情；喜好；（昵称）亲爱的；爱你的；心爱的人；钟爱之物；零分','v. 爱恋（某人）；关爱；喜欢（某物或某事）；忠于','n. (Love) （英、菲、瑞、美）洛夫（人名）'],'us-speech':'http://openapi.youdao.com/ttsapi?q=love&langType=en&sign=A210584A844999644572BD8E4D228A6D&salt=1588761973726&voice=6&format=mp3&appKey=0cc942aae8ef010c'},'l':'en2zh-CHS','speakUrl':'http://openapi.youdao.com/ttsapi?q=love&langType=en&sign=A210584A844999644572BD8E4D228A6D&salt=1588761973726&voice=4&format=mp3&appKey=0cc942aae8ef010c'}";
-
-                //  TranslationTextResponse resp = parseJSON(result);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -387,21 +389,14 @@ public class SearchFragment extends Fragment {
 
         }
 
-        public String truncate(String q) {
+        private String truncate(String q) {
             if (q == null) {
                 return null;
             }
             int len = q.length();
-            String result;
             return len <= 20 ? q : (q.substring(0, 10) + len + q.substring(len - 10, len));
         }
 
-        /**
-         * 解析JSON
-         */
-        private TranslationTextResponse parseJSON(String json) {
-            return new Gson().fromJson(json, TranslationTextResponse.class);
-        }
 
     }
 
@@ -412,24 +407,5 @@ public class SearchFragment extends Fragment {
      */
     private void speak(String tSpeakUrl) {
         System.out.println(tSpeakUrl);
-//        if (tSpeakUrl != null) {
-//
-//            Uri uri1 = Uri.parse(tSpeakUrl);
-//            try {
-//                MediaPlayer mediaPlayer = new MediaPlayer();
-//                mediaPlayer.setDataSource(view, uri1);
-//                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-//                mediaPlayer.prepareAsync();
-//                mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-//                    @Override
-//                    public void onPrepared(MediaPlayer mp) {
-//                        Log.e("MediaPlayer ", "开始播放");
-//                        mp.start();
-//                    }
-//                });
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
     }
 }

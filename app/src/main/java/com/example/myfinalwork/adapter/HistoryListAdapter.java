@@ -15,6 +15,9 @@ import com.example.myfinalwork.R;
 
 import java.util.List;
 
+/**
+ * 历史记录适配器
+ */
 public class HistoryListAdapter extends ArrayAdapter<String> {
     private int resourceId;
 
